@@ -16,8 +16,12 @@ class ofApp : public ofBaseApp{
         int cols, rows;
         int cellSize;
 
+        // Image for starting pattern
+        ofImage startImage;
+
         // Helper functions
         void initializeGrid();
+        void initializeGridFromImage();
         int countNeighbors(int x, int y);
         void updateGrid();
 };
