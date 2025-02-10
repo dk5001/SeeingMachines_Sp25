@@ -5,12 +5,12 @@ void ofApp::setup() {
     // Print the rules
     cout << "GAME OF LIFE" << endl;
     cout << "THE RULES: " << endl;
-    cout << "1. FOR A SPACE THAT IS 'POPULATED':" << endl;
-    cout << "2. EACH CELL WITH ONE OR NO NEIGHBORS DIES, AS IF BY SOLITUDE." << endl;
-    cout << "3. EACH CELL WITH FOUR OR NO NEIGHBORS DIES, AS IF BY OVERPOPULATION." << endl;
-    cout << "4. EACH CELL WITH TWO OR THREE NEIGHBORS SURVIVES." << endl;
-    cout << "5. FOR A SPACE THAT IS 'EMPTY' OR 'UNPOPULATED':" << endl;
-    cout << "6. EACH CELL WITH THREE NEIGHBORS BECOMES POPULATED." << endl;
+    cout << "FOR A SPACE THAT IS 'POPULATED':" << endl;
+    cout << "* EACH CELL WITH ONE OR NO NEIGHBORS DIES, AS IF BY SOLITUDE." << endl;
+    cout << "* EACH CELL WITH FOUR OR NO NEIGHBORS DIES, AS IF BY OVERPOPULATION." << endl;
+    cout << "* EACH CELL WITH TWO OR THREE NEIGHBORS SURVIVES." << endl;
+    cout << "FOR A SPACE THAT IS 'EMPTY' OR 'UNPOPULATED':" << endl;
+    cout << "* EACH CELL WITH THREE NEIGHBORS BECOMES POPULATED." << endl;
     cout << endl;
     cout << "INSTRUCTIONS: " << endl;
     cout << "PRESS SPACE TO RESET" << endl;
@@ -39,10 +39,26 @@ void ofApp::setup() {
     startImage.resize(cols, rows);
 
     initializeGridFromImage();
+
+    // Setup GUI
+    gui.setup();
+    gui.add(frameRateSlider.setup("Frame Rate", 10, 1, 60));
+    //gui.add(cellSizeSlider.setup("Cell Size", 5, 1, 20));
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+    ofSetFrameRate(frameRateSlider);
+
+    //// Check if cell size has changed
+    //if (cellSize != cellSizeSlider) {
+    //    cellSize = cellSizeSlider;
+    //    cols = ofGetWidth() / cellSize;
+    //    rows = ofGetHeight() / cellSize;
+    //    startImage.resize(cols, rows);
+    //    initializeGridFromImage();
+    //}
+    
     updateGrid();
 }
 
@@ -61,6 +77,9 @@ void ofApp::draw() {
             ofDrawRectangle(W * cellSize, H * cellSize, cellSize, cellSize);
         }
     }
+
+    // Draw GUI
+    gui.draw();
 }
 
 //--------------------------------------------------------------

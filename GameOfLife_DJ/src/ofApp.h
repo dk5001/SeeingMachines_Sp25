@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
 
 class ofApp : public ofBaseApp{
     public:
@@ -18,6 +19,11 @@ class ofApp : public ofBaseApp{
 
         // Image for starting pattern
         ofImage startImage;
+
+        // GUI elements
+        ofxPanel gui;
+        ofxIntSlider frameRateSlider;
+        ofxIntSlider cellSizeSlider;
 
         // Helper functions
         void initializeGrid();
