@@ -21,22 +21,11 @@ void ofApp::setup() {
 	// Setup GUI
 	gui.setup();
 	gui.add(thresholdSlider.setup("Threshold", threshold, 0.0f, 255.0f));
-	gui.add(pixelSizeSlider.setup("Pixel Size", 10, 1, 50));
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
 	grabber.update();
-	//ofPixels& grabberPixels = grabber.getPixels();		// just reading the color, so beneficial to use reference
-	//ofPixels& resultPixels = resultImg.getPixels();		// calling the actual pixels inside the image
-	//for (int y = 0; y < grabber.getHeight(); y++) {
-	//	for
-	//		(int x = 0; x < grabber.getWidth(); x++) {
-	//		ofColor pixColor = grabberPixels.getColor(x, y);
-	//		resultPixels.setColor(x, y, pixColor);
-	//	}
-	//}
-	//resultImg.update();	// not calling a copy. calling the actual pixels inside the image
 
 	if (grabber.isFrameNew()) {
 		currentFrame = grabber.getPixels();
@@ -57,7 +46,10 @@ void ofApp::update() {
 				}
 				else {
 					// Static pixel: retain previous color
-					processedFrame.setColor(x, y, prevColor);
+					prevColor.r = 255 - prevColor.r;
+					prevColor.g = 255 - prevColor.g;
+					prevColor.b = 255 - prevColor.b;
+					processedFrame.setColor(x, y, prevColor/*.getBrightness()*/);
 				}
 			}
 		}

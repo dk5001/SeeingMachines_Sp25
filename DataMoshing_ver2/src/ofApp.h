@@ -36,5 +36,4 @@ public:
 
 	ofxPanel gui;
 	ofxFloatSlider thresholdSlider;
-	ofxIntSlider pixelSizeSlider;
 };
