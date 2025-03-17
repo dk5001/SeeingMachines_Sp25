@@ -26,7 +26,12 @@ void ofApp::setup()
     light.setup();
     light.setPosition(0, 0, 600); // Position the light on the Z-axis
     light.lookAt(ofVec3f(0, 0, 0)); // Point the light towards the origin (front of the model)
+    light.setDiffuseColor(ofFloatColor(1.0, 1.0, 1.0)); // Set diffuse color to white
+    light.setSpecularColor(ofFloatColor(1.0, 1.0, 1.0)); // Set specular color to white
     light.enable();
+
+    // Set up ambient light
+    ofSetGlobalAmbientColor(ofFloatColor(0.2, 0.2, 0.2)); // Set a low ambient light
 }
 
 void ofApp::update()
@@ -77,6 +82,10 @@ void ofApp::update()
         {
             averageDistance = totalDistance / pixelCount;
             ofLogNotice() << "Average Distance: " << averageDistance;
+
+            // Update the model's Z position based on the average distance
+            float newZPosition = initialZPosition - averageDistance * 500.0f; // Scale the distance as needed
+            model.setPosition(0, 0, newZPosition);
         }
     }
 }

@@ -19,6 +19,8 @@ private:
     float interval;
 
     float averageDistance; // Store the average distance
+    float initialZPosition; // Initial Z position of the model
+    float minAverageDistance; // Minimum average distance encountered
 
     ofVideoGrabber webcam; // Add webcam object
 
