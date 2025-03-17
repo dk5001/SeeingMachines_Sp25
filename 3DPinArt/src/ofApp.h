@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxRealSense2.h"
+#include "ofxAssimpModelLoader.h"
 
 class ofApp : public ofBaseApp
 {
@@ -18,4 +19,10 @@ private:
     float interval;
 
     float averageDistance; // Store the average distance
+
+    ofVideoGrabber webcam; // Add webcam object
+
+    ofxAssimpModelLoader model; // 3D model loader
+    ofEasyCam cam; // Easy camera for 3D navigation
+    ofLight light; // Light source
 };
