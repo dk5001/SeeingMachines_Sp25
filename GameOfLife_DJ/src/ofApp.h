@@ -24,6 +24,7 @@ class ofApp : public ofBaseApp{
         ofxPanel gui;
         ofxIntSlider frameRateSlider;
         ofxIntSlider cellSizeSlider;
+        ofxIntSlider thresholdSlider;
 
         // Helper functions
         void initializeGrid();

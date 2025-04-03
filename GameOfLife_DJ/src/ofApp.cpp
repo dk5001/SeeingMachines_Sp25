@@ -44,6 +44,7 @@ void ofApp::setup() {
     gui.setup();
     gui.add(frameRateSlider.setup("Frame Rate", 10, 1, 60));
     //gui.add(cellSizeSlider.setup("Cell Size", 5, 1, 20));
+    gui.add(thresholdSlider.setup("Threshold", 50, 0, 255));
 }
 
 //--------------------------------------------------------------
@@ -116,10 +117,22 @@ void ofApp::initializeGridFromImage() {
     for (int W = 0; W < cols; W++) {
         for (int H = 0; H < rows; H++) {
             ofColor color = pixels.getColor(W, H);
-            grid[W][H] = (color.getBrightness() > 50) ? 0 : 1;  // Threshold to determine live or dead cell
+            grid[W][H] = (color.getBrightness() > thresholdSlider) ? 0 : 1;  // Threshold to determine live or dead cell
         }
     }
 }
+
+// Update the initialization of the grid from the image
+//void ofApp::initializeGridFromImage() {
+//    grid.resize(cols, vector<int>(rows, 0));
+//    ofPixels &pixels = startImage.getPixels();
+//    for (int W = 0; W < cols; W++) {
+//        for (int H = 0; H < rows; H++) {
+//            ofColor color = pixels.getColor(W, H);
+//            grid[W][H] = (color.getBrightness() > thresholdSlider) ? 0 : 1;  // Threshold to determine live or dead cell
+//        }
+//    }
+//}
 
 //--------------------------------------------------------------
 int ofApp::countNeighbors(int x, int y) {
