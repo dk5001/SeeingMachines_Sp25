@@ -1,23 +1,31 @@
-// ofApp.h
 #pragma once
 
 #include "ofMain.h"
-
 #include "ofxOsc.h"
 
-class ofApp : public ofBaseApp
-{
+class ofApp : public ofBaseApp {
 public:
-	void setup();
-	void draw();
+    void setup();
+    void update();
+    void draw();
 
-	void keyPressed(int key);
-	void mouseDragged(int x, int y, int button);
-	void mousePressed(int x, int y, int button);
-	void mouseReleased(int x, int y, int button);
+    // Calculate average brightness using downsampling
+    float calculateBrightness();
 
-	std::string sendAddr;
-	int sendPort;
+    ofVideoGrabber videoGrabber;
+    ofxOscSender oscSender;
 
-	ofxOscSender sender;
+    // Parameters
+    int downsampleSize;       // Size to downsample to (e.g., 32x32)
+    int sendInterval;         // Send OSC every N frames
+    int frameCounter;         // To track frames for interval sending
+    float currentBrightness;  // Store current brightness value
+    string oscHost;           // OSC destination host
+    int oscPort;              // OSC destination port
+    string oscAddress;        // OSC message address
+    int lastOscValue;         // Last sent OSC value to avoid sending duplicates
+
+    // Debug visualization
+    ofImage downsampledImg;   // For visualization
+    bool showDebug;           // Toggle debug visualization
 };
