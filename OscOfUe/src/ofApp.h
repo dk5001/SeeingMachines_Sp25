@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxOsc.h"
+#include "ofxGui.h"
 
 class ofApp : public ofBaseApp {
 public:
@@ -28,4 +29,8 @@ public:
     // Debug visualization
     ofImage downsampledImg;   // For visualization
     bool showDebug;           // Toggle debug visualization
+
+    // GUI
+    ofxPanel gui;
+    ofxFloatSlider brightnessSlider;
 };

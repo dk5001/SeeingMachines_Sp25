@@ -22,6 +22,10 @@ void ofApp::setup() {
     downsampledImg.allocate(downsampleSize, downsampleSize, OF_IMAGE_COLOR);
     showDebug = true;
 
+    // GUI setup
+    gui.setup();
+    gui.add(brightnessSlider.setup("Brightness Threshold", 0.1f, 0.0f, 1.0f));
+
     ofSetFrameRate(30);
     ofBackground(0);
 }
@@ -37,8 +41,11 @@ void ofApp::update() {
         currentBrightness = calculateBrightness();
 
         // Determine the value to send based on brightness
-        int oscValue = (currentBrightness < 0.1f) ? 1 : 0;
-
+        //int oscValue = (currentBrightness < 0.1f) ? 1 : 0;
+        int oscValue = 0;
+        if (currentBrightness < 0.1f) {
+            oscValue = 1;
+        }
         // Send OSC message only if the value has changed
         if (oscValue != lastOscValue) {
             ofxOscMessage message;
@@ -112,6 +119,9 @@ void ofApp::draw() {
         ofSetColor(255, 255, 0);
         ofDrawRectangle(10, 170, currentBrightness * 200, 20);
     }
+
+    // Draw GUI
+    gui.draw();
 
     // Instructions
     ofDrawBitmapStringHighlight("Press space to toggle debug view", 10, ofGetHeight() - 20);
