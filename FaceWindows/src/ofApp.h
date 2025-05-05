@@ -14,6 +14,7 @@ public:
 
     void detectFaces();
     void manageWindows();
+    void updateWindowPosition();
 
     ofVideoGrabber cam;
     ofxCv::ObjectFinder faceFinder;
@@ -21,4 +22,5 @@ public:
     int nextFaceID = 0;
     std::map<int, shared_ptr<ofAppFace>> faceWindows; // Face ID -> App instance
     std::map<int, ofRectangle> previousFaces;         // Face ID -> Face bounds
+    glm::vec2 windowPosition;
 };
