@@ -2,16 +2,20 @@
 
 #include "ofMain.h"
 
+enum class FeatureType { EYE, NOSE, MOUTH };
+
 class ofAppFace : public ofBaseApp {
 public:
-    void setupFace(ofVideoGrabber& sourceCam, ofRectangle faceRect);
+    void setupFace(ofVideoGrabber& sourceCam, ofRectangle faceRect, FeatureType type);
     void updateFace(ofVideoGrabber& sourceCam, ofRectangle faceRect);
     void setUpdating(bool updating);
-
     void update();
     void draw();
 
 private:
     ofImage faceCrop;
-    bool isUpdating = true; // Whether this face window should update
+    bool isUpdating = true;
+    FeatureType featureType;
+
+    ofRectangle getFeatureROI(ofRectangle faceRect);
 };

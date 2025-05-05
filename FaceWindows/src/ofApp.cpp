@@ -55,46 +55,41 @@ void ofApp::detectFaces() {
 }
 
 void ofApp::manageWindows() {
-    // Open new windows for newly detected faces
     for (auto& face : previousFaces) {
-        if (faceWindows.find(face.first) == faceWindows.end()) {
-            // Create new window
-            ofGLFWWindowSettings settings;
-            settings.width = 200;
-            settings.height = 200;
-            settings.resizable = false;
+        int id = face.first;
+        auto rect = face.second;
 
-            // Set initial position of the window based on the face's position
-            settings.setPosition(ofVec2f(face.second.getX(), face.second.getY()));
+        for (auto feature : { FeatureType::EYE, FeatureType::NOSE, FeatureType::MOUTH }) {
+            auto key = id * 10 + static_cast<int>(feature);
+            if (faceWindows.find(key) == faceWindows.end()) {
+                ofGLFWWindowSettings settings;
+                settings.width = 200;
+                settings.height = 200;
+                settings.resizable = false;
+                settings.setPosition({ rect.x + 250 * static_cast<int>(feature), rect.y });
 
-            auto win = ofCreateWindow(settings);
-
-            auto faceApp = make_shared<ofAppFace>();
-            faceApp->setupFace(cam, face.second);
-
-            ofRunApp(win, faceApp);
-            faceWindows[face.first] = faceApp;
-        } else {
-            // Update the face normally
-            faceWindows[face.first]->setUpdating(true);
-            faceWindows[face.first]->updateFace(cam, face.second);
-
-            // Move the window to follow the face's position
-            auto baseWindow = ofGetWindowPtr();
-            auto glfwWindow = dynamic_cast<ofAppGLFWWindow*>(baseWindow);
-            if (glfwWindow) {
-                auto newPosition = ofVec2f(face.second.getX(), face.second.getY());
-                glfwSetWindowPos(glfwWindow->getGLFWWindow(), static_cast<int>(newPosition.x), static_cast<int>(newPosition.y));
+                auto win = ofCreateWindow(settings);
+                auto app = make_shared<ofAppFace>();
+                app->setupFace(cam, rect, feature);
+                ofRunApp(win, app);
+                faceWindows[key] = app;
+            }
+            else {
+                faceWindows[key]->setUpdating(true);
+                faceWindows[key]->updateFace(cam, rect);
             }
         }
     }
 
-    // For any window not matched, freeze (but don't close)
-    for (auto& face : faceWindows) {
-        if (previousFaces.find(face.first) == previousFaces.end()) {
-            face.second->setUpdating(false); // Stop updating, freeze frame
-        }
-    }
+    // Freeze unmatched
+    std::set<int> activeKeys;
+    for (auto& face : previousFaces)
+        for (int i = 0; i < 3; ++i)
+            activeKeys.insert(face.first * 10 + i);
+
+    for (auto& win : faceWindows)
+        if (activeKeys.find(win.first) == activeKeys.end())
+            win.second->setUpdating(false);
 }
 
 void ofApp::exit() {
