@@ -55,42 +55,58 @@ void ofApp::detectFaces() {
 }
 
 void ofApp::manageWindows() {
-    for (auto& face : previousFaces) {
-        int id = face.first;
-        auto rect = face.second;
+    const int winWidth = 200;
+    const int winHeight = 200;
+    const int verticalSpacing = 5;
+
+    for (auto& [id, faceRect] : previousFaces) {
+        int baseX = static_cast<int>(faceRect.x + faceRect.width + 20);
+        int baseY = static_cast<int>(faceRect.y);
+
+        int featureIndex = 0;
 
         for (auto feature : { FeatureType::EYE, FeatureType::NOSE, FeatureType::MOUTH }) {
-            auto key = id * 10 + static_cast<int>(feature);
-            if (faceWindows.find(key) == faceWindows.end()) {
+            if (faceWindows[id].find(feature) == faceWindows[id].end()) {
+                // Create new window
                 ofGLFWWindowSettings settings;
-                settings.width = 200;
-                settings.height = 200;
+                settings.width = winWidth;
+                settings.height = winHeight;
                 settings.resizable = false;
-                settings.setPosition({ rect.x + 250 * static_cast<int>(feature), rect.y });
+                settings.setPosition({ baseX, baseY + featureIndex * (winHeight + verticalSpacing) });
 
                 auto win = ofCreateWindow(settings);
                 auto app = make_shared<ofAppFace>();
-                app->setupFace(cam, rect, feature);
+                app->setupFace(cam, faceRect, feature);
                 ofRunApp(win, app);
-                faceWindows[key] = app;
+
+                auto glfwWin = dynamic_cast<ofAppGLFWWindow*>(win.get())->getGLFWWindow();
+                faceWindows[id][feature] = { app, glfwWin };
             }
             else {
-                faceWindows[key]->setUpdating(true);
-                faceWindows[key]->updateFace(cam, rect);
+                auto& fw = faceWindows[id][feature];
+                fw.app->setUpdating(true);
+                fw.app->updateFace(cam, faceRect);
+
+                // Move the window to track vertically relative to face
+                int winX = baseX;
+                int winY = baseY + featureIndex * (winHeight + verticalSpacing);
+                glfwSetWindowPos(fw.glfw, winX, winY);
             }
+
+            ++featureIndex;
         }
     }
 
     // Freeze unmatched
-    std::set<int> activeKeys;
-    for (auto& face : previousFaces)
-        for (int i = 0; i < 3; ++i)
-            activeKeys.insert(face.first * 10 + i);
-
-    for (auto& win : faceWindows)
-        if (activeKeys.find(win.first) == activeKeys.end())
-            win.second->setUpdating(false);
+    for (auto& [id, features] : faceWindows) {
+        if (previousFaces.find(id) == previousFaces.end()) {
+            for (auto& [feature, fw] : features) {
+                fw.app->setUpdating(false);
+            }
+        }
+    }
 }
+
 
 void ofApp::exit() {
     // Cleanup all face windows

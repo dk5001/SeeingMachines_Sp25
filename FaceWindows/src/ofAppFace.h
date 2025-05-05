@@ -1,8 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-
-enum class FeatureType { EYE, NOSE, MOUTH };
+#include "FeatureType.h"
 
 class ofAppFace : public ofBaseApp {
 public:

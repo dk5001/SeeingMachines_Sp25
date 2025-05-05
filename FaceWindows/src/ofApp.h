@@ -4,6 +4,7 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofAppFace.h"
+#include "FeatureType.h"
 
 class ofApp : public ofBaseApp {
 public:
@@ -20,7 +21,14 @@ public:
     ofxCv::ObjectFinder faceFinder;
 
     int nextFaceID = 0;
-    std::map<int, shared_ptr<ofAppFace>> faceWindows; // Face ID -> App instance
+
+    struct FeatureWindow {
+        shared_ptr<ofAppFace> app;
+        GLFWwindow* glfw;
+    };
+
+    std::map<int, std::map<FeatureType, FeatureWindow>> faceWindows;
+    // Face ID -> App instance
     std::map<int, ofRectangle> previousFaces;         // Face ID -> Face bounds
     glm::vec2 windowPosition;
 };
