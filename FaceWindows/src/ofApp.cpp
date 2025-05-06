@@ -59,43 +59,77 @@ void ofApp::manageWindows() {
     const int winHeight = 200;
     const int verticalSpacing = 5;
 
+    std::vector<FeatureType> features = {
+    FeatureType::EYE_LEFT,
+    FeatureType::EYE_RIGHT,
+    FeatureType::NOSE,
+    FeatureType::MOUTH
+    };
+
     for (auto& [id, faceRect] : previousFaces) {
         int baseX = static_cast<int>(faceRect.x + faceRect.width + 20);
         int baseY = static_cast<int>(faceRect.y);
 
-        int featureIndex = 0;
+        for (int i = 0; i < features.size(); ++i) {
+            auto feature = features[i];
 
-        for (auto feature : { FeatureType::EYE, FeatureType::NOSE, FeatureType::MOUTH }) {
+            // Horizontal layout for eyes
+            int offsetX = baseX;
+            int offsetY = baseY;
+
+            if (feature == FeatureType::EYE_LEFT) {
+                offsetX = baseX - 110;  // Shift left eye slightly to the left
+                offsetY = baseY;
+            }
+            else if (feature == FeatureType::EYE_RIGHT) {
+                offsetX = baseX + 110;  // Shift right eye to the right
+                offsetY = baseY;
+            }
+            else if (feature == FeatureType::NOSE) {
+                offsetX = baseX;
+                offsetY = baseY + 210;
+            }
+            else if (feature == FeatureType::MOUTH) {
+                offsetX = baseX;
+                offsetY = baseY + 420;
+            }
+
+
             if (faceWindows[id].find(feature) == faceWindows[id].end()) {
-                // Create new window
                 ofGLFWWindowSettings settings;
-                settings.width = winWidth;
-                settings.height = winHeight;
+                settings.width = 200;
+                settings.height = 200;
                 settings.resizable = false;
-                settings.setPosition({ baseX, baseY + featureIndex * (winHeight + verticalSpacing) });
+                settings.setPosition({ offsetX, offsetY });
 
                 auto win = ofCreateWindow(settings);
-                auto app = make_shared<ofAppFace>();
+                auto app = std::make_shared<ofAppFace>();
                 app->setupFace(cam, faceRect, feature);
                 ofRunApp(win, app);
 
-                auto glfwWin = dynamic_cast<ofAppGLFWWindow*>(win.get())->getGLFWWindow();
-                faceWindows[id][feature] = { app, glfwWin };
+                auto glfw = dynamic_cast<ofAppGLFWWindow*>(win.get())->getGLFWWindow();
+
+                // Set the window title based on the feature type -> not working 
+                std::string title;
+                switch (feature) {
+                case FeatureType::EYE_LEFT:  title = "Left Eye"; break;
+                case FeatureType::EYE_RIGHT: title = "Right Eye"; break;
+                case FeatureType::NOSE:      title = "Nose"; break;
+                case FeatureType::MOUTH:     title = "Mouth"; break;
+                }
+                glfwSetWindowTitle(glfw, title.c_str());
+
+                faceWindows[id][feature] = { app, glfw };
             }
             else {
                 auto& fw = faceWindows[id][feature];
                 fw.app->setUpdating(true);
                 fw.app->updateFace(cam, faceRect);
-
-                // Move the window to track vertically relative to face
-                int winX = baseX;
-                int winY = baseY + featureIndex * (winHeight + verticalSpacing);
-                glfwSetWindowPos(fw.glfw, winX, winY);
+                glfwSetWindowPos(fw.glfw, offsetX, offsetY);
             }
-
-            ++featureIndex;
         }
     }
+
 
     // Freeze unmatched
     for (auto& [id, features] : faceWindows) {

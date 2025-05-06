@@ -1,3 +1,9 @@
 #pragma once
 
-enum class FeatureType { EYE, NOSE, MOUTH };
+enum class FeatureType {
+    EYE_LEFT,
+    EYE_RIGHT,
+    NOSE,
+    MOUTH
+};
+
