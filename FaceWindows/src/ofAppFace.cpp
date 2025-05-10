@@ -1,23 +1,45 @@
 #include "ofAppFace.h"
 
-void ofAppFace::setupFace(ofVideoGrabber& sourceCam, ofRectangle faceRect, FeatureType type) {
+void ofAppFace::setupFace(ofVideoGrabber& sourceCam, ofRectangle faceRect, FeatureType type, int width, int height) {
     featureType = type;
+    faceWidth = width;
+    faceHeight = height;
     updateFace(sourceCam, faceRect);
+    windowSize = glm::vec2(width, height);
 }
 
 void ofAppFace::updateFace(ofVideoGrabber& sourceCam, ofRectangle faceRect) {
     if (!isUpdating) return;
 
-    auto roi = getFeatureROI(faceRect);
-    faceCrop.setFromPixels(sourceCam.getPixels());
-    faceCrop.crop(roi.x, roi.y, roi.width, roi.height);
-    faceCrop.resize(200, 200);
+    const ofPixels& camPixels = sourceCam.getPixels();
+    if (!camPixels.isAllocated() || camPixels.getWidth() == 0 || camPixels.getHeight() == 0) return;
+
+    ofRectangle roi = getFeatureROI(faceRect);
+
+    // Clamp ROI to image bounds
+    roi.x = std::max(0.f, roi.x);
+    roi.y = std::max(0.f, roi.y);
+    roi.width = std::min(roi.width, camPixels.getWidth() - roi.x);
+    roi.height = std::min(roi.height, camPixels.getHeight() - roi.y);
+
+    if (roi.width <= 0 || roi.height <= 0) return;
+
+    faceCrop.cropFrom(sourceCam.getPixels(), roi.x, roi.y, roi.width, roi.height);
+    faceCrop.update();
+
+    ofLogNotice() << "ROI: " << roi;
 }
 
 void ofAppFace::update() {}
 
 void ofAppFace::draw() {
-    faceCrop.draw(0, 0);
+    //faceCrop.draw(0, 0);
+    faceCrop.draw(0, 0, faceWidth, faceHeight);
+}
+
+void ofAppFace::windowResized(int w, int h)
+{
+    windowSize = glm::vec2(w, h);
 }
 
 void ofAppFace::setUpdating(bool updating) {

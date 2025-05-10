@@ -15,7 +15,7 @@ public:
 
     void detectFaces();
     void manageWindows();
-    void updateWindowPosition();
+    void windowResized(int w, int h);
 
     ofVideoGrabber cam;
     ofxCv::ObjectFinder faceFinder;
@@ -27,8 +27,7 @@ public:
         GLFWwindow* glfw;
     };
 
-    std::map<int, std::map<FeatureType, FeatureWindow>> faceWindows;
-    // Face ID -> App instance
+    std::map<int, std::map<FeatureType, FeatureWindow>> faceWindows;    // Face ID -> App instance
     std::map<int, ofRectangle> previousFaces;         // Face ID -> Face bounds
     glm::vec2 windowPosition;
 };

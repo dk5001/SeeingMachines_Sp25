@@ -7,3 +7,5 @@ enum class FeatureType {
     MOUTH
 };
 
+
+// what abt giant transparent window + face parts in bounding boxes, instead of individual windows
